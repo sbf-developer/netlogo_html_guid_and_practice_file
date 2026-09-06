@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetLogo Syntax</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --bg-elevated: #ffffff;
+      --text: #1c1c1a;
+      --text-muted: #5c5c56;
+      --border: #e4e3de;
+      --accent: #c44b34;
+      --accent-soft: rgba(196, 75, 52, 0.12);
+      --link: #9a3b28;
+      --sidebar-w: 14.5rem;
+      --content-w: 44rem;
+      --font: "IBM Plex Sans", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #121416;
+      --bg-elevated: #1a1d21;
+      --text: #ececea;
+      --text-muted: #9a9a94;
+      --border: #2c3138;
+      --accent: #e86f55;
+      --accent-soft: rgba(232, 111, 85, 0.15);
+      --link: #f08b75;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+    }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1.25rem 0.9rem 2rem 1.1rem;
+      border-right: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+    .brand { font-weight: 600; font-size: 1rem; margin-bottom: 0.15rem; }
+    .brand-sub { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.9rem; }
+    .search {
+      width: 100%;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.82rem;
+      margin-bottom: 0.85rem;
+    }
+    nav ul { list-style: none; padding: 0; margin: 0; }
+    nav a {
+      display: block;
+      padding: 0.25rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    nav a:hover, nav a.active {
+      color: var(--text);
+      background: var(--accent-soft);
+      text-decoration: none;
+    }
+    .main-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 1.75rem 1.25rem 3rem;
+    }
+    main { width: 100%; max-width: var(--content-w); }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      margin: 0.35rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .theme-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.4rem 0.7rem;
+      font: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    section { margin-bottom: 2.25rem; scroll-margin-top: 1rem; }
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 1.25rem 0 0.45rem;
+    }
+    p.note {
+      margin: 0 0 0.6rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    code, pre { font-family: var(--mono); font-size: 0.8rem; }
+    code { background: transparent; }
+    .translate {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      margin: 0.5rem 0 0.75rem;
+    }
+    .translate .row {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 0.75rem;
+      padding: 0.5rem 0.7rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.84rem;
+      align-items: start;
+    }
+    .translate .row:last-child { border-bottom: none; }
+    .translate .code { font-family: var(--mono); word-break: break-word; }
+    .translate .mean { color: var(--text-muted); }
+    .ex-pre {
+      margin: 0.35rem 0 0.6rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .ex-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.35rem;
+    }
+    .ex-title:first-child { margin-top: 0; }
+    .examples-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .examples-head h2 {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .ex-block { margin-bottom: 1.75rem; }
+    .ex-block .note {
+      margin: 1.5rem 0 0.35rem;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    .ex-block:first-of-type .note { margin-top: 0; }
+    .ex-split-toggle {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .ex-split-toggle:hover { color: var(--text); }
+    .ex-split-check {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    .ex-split-toggle .when-on { display: none; }
+    .ex-split-check:checked ~ .when-off { display: none; }
+    .ex-split-check:checked ~ .when-on { display: inline; }
+    #examples:has(#examples-split:checked) .ex-split-toggle { color: var(--text); }
+    #examples:has(#examples-split:checked) .ex-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 0.75rem;
+      align-items: start;
+    }
+    #examples:has(#examples-split:checked) .ex-pre,
+    #examples:has(#examples-split:checked) .translate {
+      margin: 0;
+      max-height: min(70vh, 34rem);
+      overflow: auto;
+    }
+    #examples:has(#examples-split:checked) .ex-pre {
+      position: sticky;
+      top: 1rem;
+    }
+    main:has(#examples-split:checked) { max-width: min(72rem, 100%); }
+    .translate .head {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 0.75rem;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .hidden { display: none !important; }
+    .mobile-nav-btn {
+      display: none;
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 20;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      border-radius: 999px;
+      padding: 0.55rem 0.9rem;
+      font: inherit;
+      cursor: pointer;
+    }
+    @media (max-width: 640px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; z-index: 30;
+        width: min(17rem, 88vw);
+        transform: translateX(-105%);
+        transition: transform 0.2s;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .mobile-nav-btn { display: block; }
+      .translate .row, .translate .head { grid-template-columns: 1fr; }
+      #examples:has(#examples-split:checked) .ex-content { grid-template-columns: 1fr; }
+      #examples:has(#examples-split:checked) .ex-pre { position: static; max-height: none; }
+      #examples:has(#examples-split:checked) .translate { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">NetLogo Syntax</div>
+      <div class="brand-sub">Code → what it means</div>
+      <input type="search" class="search" id="search" placeholder="Search syntax…">
+      <nav>
+        <ul>
+          <li><a href="#rules">Rules</a></li>
+          <li><a href="#structure">Structure</a></li>
+          <li><a href="#declarations">Declarations</a></li>
+          <li><a href="#ask">ask</a></li>
+          <li><a href="#variables">Variables</a></li>
+          <li><a href="#control">Control flow</a></li>
+          <li><a href="#agentsets">Agentsets</a></li>
+          <li><a href="#turtles">Turtles</a></li>
+          <li><a href="#patches">Patches</a></li>
+          <li><a href="#links">Links</a></li>
+          <li><a href="#lists">Lists</a></li>
+          <li><a href="#strings">Strings</a></li>
+          <li><a href="#math">Math &amp; logic</a></li>
+          <li><a href="#reporters">to-report</a></li>
+          <li><a href="#ticks">Ticks</a></li>
+          <li><a href="#output">Output</a></li>
+          <li><a href="#anonymous">Anonymous</a></li>
+          <li><a href="#examples">Examples</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="main-wrap">
+      <main>
+        <header class="topbar">
+          <div>
+            <h1>NetLogo syntax translator</h1>
+            <p class="lede">Each line of code, translated. Command = does something. Reporter = returns a value.</p>
+          </div>
+          <button class="theme-btn" id="theme-btn" type="button">Dark</button>
+        </header>
+
+        <section id="rules" data-search="syntax rules brackets semicolon">
+          <h2>Syntax rules</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">;</span><span class="mean">Comment: rest of line ignored.</span></div>
+            <div class="row"><span class="code">[ ... ]</span><span class="mean">Block: group of commands or one reporter.</span></div>
+            <div class="row"><span class="code">set x 5</span><span class="mean">Prefix style: verb first, then inputs. No commas.</span></div>
+            <div class="row"><span class="code">(list 1 2 3)</span><span class="mean">Parentheses when a primitive takes more than its default number of inputs.</span></div>
+            <div class="row"><span class="code">to name ... end</span><span class="mean">Define a procedure. Names are case-insensitive.</span></div>
+          </div>
+        </section>
+
+        <section id="structure" data-search="setup go to end procedure clear-all create reset-ticks tick">
+          <h2>Program structure</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to setup ... end</span><span class="mean">Define setup procedure (convention: initialize world).</span></div>
+            <div class="row"><span class="code">to go ... end</span><span class="mean">Define go procedure (convention: one simulation step).</span></div>
+            <div class="row"><span class="code">to my-proc [ a b ] ... end</span><span class="mean">Procedure with inputs a and b.</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Observer removes all agents, resets everything.</span></div>
+            <div class="row"><span class="code">create-turtles 50 [ ... ]</span><span class="mean">Observer makes 50 turtles; block runs once per new turtle.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Set time counter to 0 (usually last line of setup).</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance time counter by 1 (usually last line of go).</span></div>
+            <div class="row"><span class="code">ticks</span><span class="mean">Reporter: current time counter value.</span></div>
+          </div>
+        </section>
+
+        <section id="declarations" data-search="globals breed turtles-own patches-own links-own">
+          <h2>Declarations (top of Code tab)</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">globals [ score n ]</span><span class="mean">Shared variables for whole model (observer-owned).</span></div>
+            <div class="row"><span class="code">breed [ sheep a-sheep ]</span><span class="mean">Turtle type: plural name = set, singular = one agent.</span></div>
+            <div class="row"><span class="code">turtles-own [ energy ]</span><span class="mean">Every turtle gets its own energy variable.</span></div>
+            <div class="row"><span class="code">patches-own [ heat ]</span><span class="mean">Every patch gets its own heat variable.</span></div>
+            <div class="row"><span class="code">sheep-own [ wool ]</span><span class="mean">Variable only for sheep breed.</span></div>
+            <div class="row"><span class="code">directed-link-breed [ roads road ]</span><span class="mean">Directed link type (has from/to).</span></div>
+            <div class="row"><span class="code">undirected-link-breed [ edges edge ]</span><span class="mean">Undirected link type (no direction).</span></div>
+            <div class="row"><span class="code">links-own [ weight ]</span><span class="mean">Every link gets its own weight variable.</span></div>
+          </div>
+        </section>
+
+        <section id="ask" data-search="ask observer turtles context self">
+          <h2>ask: who runs the code</h2>
+          <p class="note">Code outside ask = observer. Turtle code must be inside ask turtles [ ].</p>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">ask turtles [ fd 1 ]</span><span class="mean">Each turtle walks forward 1, one turtle at a time, random order.</span></div>
+            <div class="row"><span class="code">ask turtle 0 [ set color red ]</span><span class="mean">Only the turtle with who-number 0 turns red.</span></div>
+            <div class="row"><span class="code">ask patches [ set pcolor green ]</span><span class="mean">Every patch sets its color.</span></div>
+            <div class="row"><span class="code">ask sheep with [ energy > 10 ] [ ... ]</span><span class="mean">Only sheep with energy &gt; 10 run the block.</span></div>
+            <div class="row"><span class="code">self</span><span class="mean">Reporter: the agent currently running this line.</span></div>
+          </div>
+          <h3>Two ask blocks = two phases</h3>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">ask turtles [ fd 1 ]<br>ask turtles [ set color red ]</span><span class="mean">All turtles move, then all turtles turn red.</span></div>
+            <div class="row"><span class="code">ask turtles [ fd 1 set color red ]</span><span class="mean">Each turtle moves then turns red before the next turtle starts.</span></div>
+          </div>
+        </section>
+
+        <section id="variables" data-search="set let variables">
+          <h2>Variables</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">set energy 100</span><span class="mean">Put 100 in energy.</span></div>
+            <div class="row"><span class="code">set energy energy - 1</span><span class="mean">Decrease energy by 1.</span></div>
+            <div class="row"><span class="code">let x 5</span><span class="mean">Local variable x = 5 for this procedure/block only.</span></div>
+            <div class="row"><span class="code">let temp [ color ] of turtle 1</span><span class="mean">Store another agent's color in temp.</span></div>
+          </div>
+        </section>
+
+        <section id="control" data-search="if ifelse repeat while stop report">
+          <h2>Control flow</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">if energy > 0 [ fd 1 ]</span><span class="mean">Run block only when condition is true.</span></div>
+            <div class="row"><span class="code">ifelse x > 0 [ ... ] [ ... ]</span><span class="mean">If true run first block, else run second.</span></div>
+            <div class="row"><span class="code">ifelse-value cond [ "yes" ] [ "no" ]</span><span class="mean">Reporter: pick one of two values (like ternary).</span></div>
+            <div class="row"><span class="code">repeat 10 [ fd 1 ]</span><span class="mean">Run block 10 times.</span></div>
+            <div class="row"><span class="code">while [ count turtles > 0 ] [ ... ]</span><span class="mean">Run block while condition stays true.</span></div>
+            <div class="row"><span class="code">stop</span><span class="mean">Exit current command procedure immediately.</span></div>
+            <div class="row"><span class="code">report 42</span><span class="mean">Inside to-report: return value and exit.</span></div>
+          </div>
+        </section>
+
+        <section id="agentsets" data-search="agentsets with in-radius of count one-of turtles patches">
+          <h2>Agentsets</h2>
+          <p class="note">A set of turtles, patches, or links: never mixed. Order is random each time.</p>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">turtles</span><span class="mean">All turtles.</span></div>
+            <div class="row"><span class="code">patches</span><span class="mean">All patches.</span></div>
+            <div class="row"><span class="code">sheep</span><span class="mean">All sheep (breed agentset).</span></div>
+            <div class="row"><span class="code">turtles with [ color = red ]</span><span class="mean">Only red turtles.</span></div>
+            <div class="row"><span class="code">turtles in-radius 3</span><span class="mean">Turtles within distance 3 of me.</span></div>
+            <div class="row"><span class="code">turtles-here</span><span class="mean">Turtles on my patch.</span></div>
+            <div class="row"><span class="code">other turtles</span><span class="mean">All turtles except me.</span></div>
+            <div class="row"><span class="code">neighbors</span><span class="mean">8 neighboring patches.</span></div>
+            <div class="row"><span class="code">neighbors4</span><span class="mean">4 neighboring patches (N E S W).</span></div>
+            <div class="row"><span class="code">one-of turtles</span><span class="mean">One random turtle (or nobody if empty).</span></div>
+            <div class="row"><span class="code">max-one-of turtles [ energy ]</span><span class="mean">Turtle with highest energy.</span></div>
+            <div class="row"><span class="code">count turtles</span><span class="mean">How many turtles.</span></div>
+            <div class="row"><span class="code">any? turtles</span><span class="mean">True if at least one turtle exists.</span></div>
+            <div class="row"><span class="code">all? turtles [ energy > 0 ]</span><span class="mean">True if every turtle matches condition.</span></div>
+            <div class="row"><span class="code">turtle 0</span><span class="mean">Turtle with who-number 0.</span></div>
+            <div class="row"><span class="code">patch 2 -3</span><span class="mean">Patch at coordinates (2, -3).</span></div>
+            <div class="row"><span class="code">patch-at 1 0</span><span class="mean">Patch 1 step east of me.</span></div>
+            <div class="row"><span class="code">[ energy ] of turtle 5</span><span class="mean">Read turtle 5's energy.</span></div>
+            <div class="row"><span class="code">[ xcor ] of turtles</span><span class="mean">List of every turtle's x coordinate.</span></div>
+            <div class="row"><span class="code">mean [ energy ] of turtles</span><span class="mean">Average energy across turtles.</span></div>
+          </div>
+        </section>
+
+        <section id="turtles" data-search="fd bk rt lt create hatch die setxy">
+          <h2>Turtle commands</h2>
+          <p class="note">Must run inside ask turtles [ ] or turtle button.</p>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">fd 1</span><span class="mean">Forward 1 step.</span></div>
+            <div class="row"><span class="code">bk 1</span><span class="mean">Backward 1 step.</span></div>
+            <div class="row"><span class="code">rt 90</span><span class="mean">Turn right 90 degrees.</span></div>
+            <div class="row"><span class="code">lt 90</span><span class="mean">Turn left 90 degrees.</span></div>
+            <div class="row"><span class="code">set heading 180</span><span class="mean">Face south.</span></div>
+            <div class="row"><span class="code">setxy 0 0</span><span class="mean">Jump to center of world.</span></div>
+            <div class="row"><span class="code">face turtle 0</span><span class="mean">Turn to face another turtle.</span></div>
+            <div class="row"><span class="code">move-to turtle 0</span><span class="mean">Teleport onto another turtle.</span></div>
+            <div class="row"><span class="code">jump 5</span><span class="mean">Teleport forward 5 (no drawing).</span></div>
+            <div class="row"><span class="code">die</span><span class="mean">Remove this turtle.</span></div>
+            <div class="row"><span class="code">hatch 1 [ fd 1 ]</span><span class="mean">Spawn 1 offspring; block runs for each child.</span></div>
+            <div class="row"><span class="code">create-sheep 5 [ ... ]</span><span class="mean">Observer creates 5 sheep.</span></div>
+            <div class="row"><span class="code">set color red</span><span class="mean">Change turtle color.</span></div>
+            <div class="row"><span class="code">set size 2</span><span class="mean">Change turtle size.</span></div>
+            <div class="row"><span class="code">set label "hi"</span><span class="mean">Text above turtle.</span></div>
+            <div class="row"><span class="code">pen-down / pen-up</span><span class="mean">Start / stop drawing a trail.</span></div>
+            <div class="row"><span class="code">hide-turtle / show-turtle</span><span class="mean">Invisible / visible.</span></div>
+          </div>
+        </section>
+
+        <section id="patches" data-search="pcolor diffuse plabel sprout">
+          <h2>Patch commands</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">set pcolor green</span><span class="mean">Change patch color.</span></div>
+            <div class="row"><span class="code">set plabel "x"</span><span class="mean">Text on patch.</span></div>
+            <div class="row"><span class="code">diffuse heat 0.1</span><span class="mean">Spread heat to 8 neighbors.</span></div>
+            <div class="row"><span class="code">diffuse4 heat 0.1</span><span class="mean">Spread heat to 4 neighbors.</span></div>
+            <div class="row"><span class="code">sprout 1 [ ... ]</span><span class="mean">Create 1 turtle on this patch.</span></div>
+          </div>
+        </section>
+
+        <section id="links" data-search="links create-link my-links">
+          <h2>Links</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">create-link-with turtle 1</span><span class="mean">Undirected link to turtle 1.</span></div>
+            <div class="row"><span class="code">create-link-to turtle 1</span><span class="mean">Directed link from me to turtle 1.</span></div>
+            <div class="row"><span class="code">create-link-from turtle 1</span><span class="mean">Directed link from turtle 1 to me.</span></div>
+            <div class="row"><span class="code">create-road-to turtle 1</span><span class="mean">Directed link using breed roads.</span></div>
+            <div class="row"><span class="code">my-links</span><span class="mean">All my links.</span></div>
+            <div class="row"><span class="code">link-neighbors</span><span class="mean">Turtles connected to me by a link.</span></div>
+            <div class="row"><span class="code">end1 / end2</span><span class="mean">The two turtles a link connects.</span></div>
+          </div>
+        </section>
+
+        <section id="lists" data-search="list map filter reduce first item">
+          <h2>Lists</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">[ 1 2 3 ]</span><span class="mean">List literal.</span></div>
+            <div class="row"><span class="code">[]</span><span class="mean">Empty list.</span></div>
+            <div class="row"><span class="code">(list 1 2 3)</span><span class="mean">Build list from values.</span></div>
+            <div class="row"><span class="code">first lst / last lst</span><span class="mean">First / last item.</span></div>
+            <div class="row"><span class="code">item 0 lst</span><span class="mean">Item at index 0 (first).</span></div>
+            <div class="row"><span class="code">length lst</span><span class="mean">Number of items.</span></div>
+            <div class="row"><span class="code">member? 3 lst</span><span class="mean">True if 3 is in list.</span></div>
+            <div class="row"><span class="code">lput 9 lst / fput 0 lst</span><span class="mean">Add to end / front (new list).</span></div>
+            <div class="row"><span class="code">replace-item 2 lst 99</span><span class="mean">New list with index 2 changed to 99.</span></div>
+            <div class="row"><span class="code">sort lst</span><span class="mean">Sorted copy.</span></div>
+            <div class="row"><span class="code">map [ [x] -> x * 2 ] lst</span><span class="mean">Apply function to each item.</span></div>
+            <div class="row"><span class="code">filter [ [x] -> x > 2 ] lst</span><span class="mean">Keep items where condition true.</span></div>
+            <div class="row"><span class="code">reduce + lst</span><span class="mean">Combine list into one value (here: sum).</span></div>
+            <div class="row"><span class="code">foreach lst [ [x] -> print x ]</span><span class="mean">Run command for each item.</span></div>
+          </div>
+        </section>
+
+        <section id="strings" data-search="string word substring">
+          <h2>Strings</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">"hello"</span><span class="mean">String literal.</span></div>
+            <div class="row"><span class="code">word "a" "b" 5</span><span class="mean">Concatenate into one string.</span></div>
+            <div class="row"><span class="code">substring "NetLogo" 0 3</span><span class="mean">Characters from index 0 up to (not including) 3.</span></div>
+            <div class="row"><span class="code">strlen "abc"</span><span class="mean">String length.</span></div>
+            <div class="row"><span class="code">read-from-string "42"</span><span class="mean">Parse string into number/list/etc.</span></div>
+          </div>
+        </section>
+
+        <section id="math" data-search="math operators random and or mod">
+          <h2>Math &amp; logic</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">+  -  *  /  mod  ^</span><span class="mean">Add, subtract, multiply, divide, remainder, power.</span></div>
+            <div class="row"><span class="code">&lt;  &gt;  &lt;=  &gt;=  =  !=</span><span class="mean">Comparisons.</span></div>
+            <div class="row"><span class="code">and  or  not  xor</span><span class="mean">Logic (and/or short-circuit).</span></div>
+            <div class="row"><span class="code">2 + 3 * 4</span><span class="mean">= 14 (multiply before add).</span></div>
+            <div class="row"><span class="code">(2 + 3) * 4</span><span class="mean">= 20 (parentheses override).</span></div>
+            <div class="row"><span class="code">random 10</span><span class="mean">Random integer 0–9.</span></div>
+            <div class="row"><span class="code">random-float 1</span><span class="mean">Random decimal 0.0–1.0.</span></div>
+            <div class="row"><span class="code">random-seed 42</span><span class="mean">Fix random sequence for reproducibility.</span></div>
+            <div class="row"><span class="code">abs / round / sqrt / mean / min / max</span><span class="mean">Common math reporters.</span></div>
+          </div>
+        </section>
+
+        <section id="reporters" data-search="to-report report procedure">
+          <h2>to-report: custom reporters</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to-report double [ n ]<br>  report n * 2<br>end</span><span class="mean">Define reporter that returns n × 2.</span></div>
+            <div class="row"><span class="code">show double 5</span><span class="mean">Calls reporter; prints 10.</span></div>
+          </div>
+        </section>
+
+        <section id="ticks" data-search="tick ticks reset clear">
+          <h2>Time</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Time = 0.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Time += 1.</span></div>
+            <div class="row"><span class="code">ticks</span><span class="mean">Current time value.</span></div>
+          </div>
+        </section>
+
+        <section id="output" data-search="print show type write">
+          <h2>Output</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">print 42</span><span class="mean">Show value in Command Center + newline.</span></div>
+            <div class="row"><span class="code">show turtles</span><span class="mean">Show value with agent label.</span></div>
+            <div class="row"><span class="code">type "hi"</span><span class="mean">Print without newline.</span></div>
+            <div class="row"><span class="code">write [1 2 3]</span><span class="mean">Machine-readable format (for file-read).</span></div>
+          </div>
+        </section>
+
+        <section id="anonymous" data-search="anonymous arrow map run runresult">
+          <h2>Anonymous procedures</h2>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">[ x -> x * 2 ]</span><span class="mean">Reporter function: input x, return x×2.</span></div>
+            <div class="row"><span class="code">[ -> print "hi" ]</span><span class="mean">Command function, no inputs.</span></div>
+            <div class="row"><span class="code">[ [a b] -> a + b ]</span><span class="mean">Two inputs.</span></div>
+            <div class="row"><span class="code">map abs [1 -2 3]</span><span class="mean">Shorthand: apply abs to each item.</span></div>
+            <div class="row"><span class="code">run my-command</span><span class="mean">Run stored anonymous command.</span></div>
+            <div class="row"><span class="code">runresult my-reporter 5</span><span class="mean">Call stored reporter with input 5.</span></div>
+          </div>
+        </section>
+
+        <section id="examples" data-search="examples code translation setup go breeds patches links lists side by side">
+          <div class="examples-head">
+            <h2>Code examples: with translations</h2>
+            <label class="ex-split-toggle"><input type="checkbox" class="ex-split-check" id="examples-split"><span class="when-off">Side by side</span><span class="when-on">Stacked</span></label>
+          </div>
+
+          <article class="ex-block">
+          <p class="note" id="ex-basic">Example 1: minimal setup / go</p>
+          <div class="ex-content">
+          <pre class="ex-pre">to setup
+  clear-all
+  create-turtles 20 [
+    set color blue
+    set energy 100
+    fd random 10
+  ]
+  reset-ticks
+end
+
+to go
+  ask turtles [
+    if energy > 0 [
+      set energy energy - 1
+      fd 1
+    ]
+  ]
+  tick
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to setup</span><span class="mean">Define a setup procedure (runs once when you press Setup).</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Observer wipes the world.</span></div>
+            <div class="row"><span class="code">create-turtles 20 [ ... ]</span><span class="mean">Make 20 turtles; block runs once per new turtle.</span></div>
+            <div class="row"><span class="code">set color blue</span><span class="mean">This turtle turns blue.</span></div>
+            <div class="row"><span class="code">set energy 100</span><span class="mean">This turtle starts with energy 100.</span></div>
+            <div class="row"><span class="code">fd random 10</span><span class="mean">Walk forward 0–9 steps.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Time counter = 0.</span></div>
+            <div class="row"><span class="code">end</span><span class="mean">End of setup procedure.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">Define a go procedure (runs each tick when Go is on).</span></div>
+            <div class="row"><span class="code">ask turtles [ ... ]</span><span class="mean">Each turtle runs the block in turn.</span></div>
+            <div class="row"><span class="code">if energy > 0 [ ... ]</span><span class="mean">Only run when energy remains.</span></div>
+            <div class="row"><span class="code">set energy energy - 1</span><span class="mean">Spend 1 energy.</span></div>
+            <div class="row"><span class="code">fd 1</span><span class="mean">Walk one step.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance clock one step.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-breeds">Example 2: breeds and own variables</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">breed [ sheep a-sheep ]
+breed [ wolves wolf ]
+sheep-own [ grass-eaten ]
+wolves-own [ hunger ]
+
+to setup
+  clear-all
+  create-sheep 30 [ set color white set grass-eaten 0 ]
+  create-wolves 5  [ set color black set hunger 0 ]
+  reset-ticks
+end
+
+to go
+  ask sheep [ eat-grass move-random ]
+  ask wolves [ hunt ]
+  tick
+end
+
+to eat-grass
+  set grass-eaten grass-eaten + 1
+  set color scale-color green grass-eaten 0 20
+end
+
+to move-random
+  rt random 40 - random 40
+  fd 1
+end
+
+to hunt
+  let prey one-of sheep-here
+  if prey != nobody [ ask prey [ die ] set hunger hunger + 1 ]
+  fd 1
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">breed [ sheep a-sheep ]</span><span class="mean">Declare turtle type: plural sheep, singular a-sheep.</span></div>
+            <div class="row"><span class="code">breed [ wolves wolf ]</span><span class="mean">Second breed: wolves / wolf.</span></div>
+            <div class="row"><span class="code">sheep-own [ grass-eaten ]</span><span class="mean">Every sheep has its own grass-eaten counter.</span></div>
+            <div class="row"><span class="code">wolves-own [ hunger ]</span><span class="mean">Every wolf has its own hunger counter.</span></div>
+            <div class="row"><span class="code">to setup</span><span class="mean">Initialize the model once.</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Remove all agents and reset globals.</span></div>
+            <div class="row"><span class="code">create-sheep 30 [ ... ]</span><span class="mean">Observer makes 30 sheep; block runs per sheep.</span></div>
+            <div class="row"><span class="code">set color white</span><span class="mean">This sheep is white.</span></div>
+            <div class="row"><span class="code">set grass-eaten 0</span><span class="mean">This sheep has eaten no grass yet.</span></div>
+            <div class="row"><span class="code">create-wolves 5 [ ... ]</span><span class="mean">Observer makes 5 wolves; block runs per wolf.</span></div>
+            <div class="row"><span class="code">set color black</span><span class="mean">This wolf is black.</span></div>
+            <div class="row"><span class="code">set hunger 0</span><span class="mean">This wolf starts with hunger 0.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Clock back to 0.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">One simulation step.</span></div>
+            <div class="row"><span class="code">ask sheep [ eat-grass move-random ]</span><span class="mean">Each sheep runs both procedures in order.</span></div>
+            <div class="row"><span class="code">ask wolves [ hunt ]</span><span class="mean">Each wolf runs hunt.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance time one step.</span></div>
+            <div class="row"><span class="code">to eat-grass</span><span class="mean">Procedure called by sheep.</span></div>
+            <div class="row"><span class="code">set grass-eaten grass-eaten + 1</span><span class="mean">Count one more grass eaten.</span></div>
+            <div class="row"><span class="code">set color scale-color green grass-eaten 0 20</span><span class="mean">Color shifts greener as grass-eaten rises (0–20).</span></div>
+            <div class="row"><span class="code">to move-random</span><span class="mean">Procedure: wander one step.</span></div>
+            <div class="row"><span class="code">rt random 40 - random 40</span><span class="mean">Turn left or right up to 40°.</span></div>
+            <div class="row"><span class="code">fd 1</span><span class="mean">Walk forward one patch.</span></div>
+            <div class="row"><span class="code">to hunt</span><span class="mean">Procedure called by wolves.</span></div>
+            <div class="row"><span class="code">let prey one-of sheep-here</span><span class="mean">Pick one random sheep on my patch (or nobody).</span></div>
+            <div class="row"><span class="code">if prey != nobody [ ... ]</span><span class="mean">Only if a sheep was found on this patch.</span></div>
+            <div class="row"><span class="code">ask prey [ die ]</span><span class="mean">Tell that sheep to remove itself.</span></div>
+            <div class="row"><span class="code">set hunger hunger + 1</span><span class="mean">Wolf ate; increase hunger counter.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-agentsets">Example 3: agentsets, with, of</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to report-stats
+  show count turtles
+  show count turtles with [ color = red ]
+  show count turtles in-radius 5
+  show mean [ energy ] of turtles
+  show [ energy ] of max-one-of turtles [ energy ]
+  ask one-of turtles with [ energy < 10 ] [ set color yellow ]
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to report-stats</span><span class="mean">Procedure that prints several statistics.</span></div>
+            <div class="row"><span class="code">show count turtles</span><span class="mean">Print how many turtles exist.</span></div>
+            <div class="row"><span class="code">count turtles</span><span class="mean">Reporter: number of turtles.</span></div>
+            <div class="row"><span class="code">show count turtles with [ color = red ]</span><span class="mean">Print count of red turtles only.</span></div>
+            <div class="row"><span class="code">turtles with [ color = red ]</span><span class="mean">Agentset: subset where color is red.</span></div>
+            <div class="row"><span class="code">show count turtles in-radius 5</span><span class="mean">Print turtles within distance 5 of caller.</span></div>
+            <div class="row"><span class="code">turtles in-radius 5</span><span class="mean">Agentset: turtles near whoever runs this.</span></div>
+            <div class="row"><span class="code">show mean [ energy ] of turtles</span><span class="mean">Print average energy across all turtles.</span></div>
+            <div class="row"><span class="code">mean [ energy ] of turtles</span><span class="mean">Reporter: average of each turtle’s energy.</span></div>
+            <div class="row"><span class="code">show [ energy ] of max-one-of turtles [ energy ]</span><span class="mean">Print energy of the richest turtle.</span></div>
+            <div class="row"><span class="code">max-one-of turtles [ energy ]</span><span class="mean">The turtle with highest energy.</span></div>
+            <div class="row"><span class="code">[ energy ] of ...</span><span class="mean">Read that agent’s energy value.</span></div>
+            <div class="row"><span class="code">ask one-of turtles with [ energy &lt; 10 ] [ set color yellow ]</span><span class="mean">Pick one low-energy turtle and turn it yellow.</span></div>
+            <div class="row"><span class="code">one-of turtles with [ energy &lt; 10 ]</span><span class="mean">One random turtle with energy below 10.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-control">Example 4: if, ifelse, repeat, let</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to go
+  ask turtles [
+    let step random 3
+    ifelse energy > 20
+      [ set color green ]
+      [ set color red ]
+    if energy > 0 [
+      repeat step [ fd 1 ]
+      set energy energy - step
+    ]
+  ]
+  tick
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">One simulation step.</span></div>
+            <div class="row"><span class="code">ask turtles [ ... ]</span><span class="mean">Each turtle runs the block in turn.</span></div>
+            <div class="row"><span class="code">let step random 3</span><span class="mean">Local variable = 0, 1, or 2.</span></div>
+            <div class="row"><span class="code">ifelse energy > 20</span><span class="mean">Test: is energy above 20?</span></div>
+            <div class="row"><span class="code">[ set color green ]</span><span class="mean">Then-branch: turn green.</span></div>
+            <div class="row"><span class="code">[ set color red ]</span><span class="mean">Else-branch: turn red.</span></div>
+            <div class="row"><span class="code">if energy > 0 [ ... ]</span><span class="mean">Move only when energy left.</span></div>
+            <div class="row"><span class="code">repeat step [ fd 1 ]</span><span class="mean">Walk forward step times.</span></div>
+            <div class="row"><span class="code">set energy energy - step</span><span class="mean">Pay energy equal to steps taken.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance clock one step.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-patches">Example 5: patches and diffuse</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">patches-own [ heat ]
+
+to setup
+  clear-all
+  ask patches [ set heat 0 set pcolor black ]
+  ask patch 0 0 [ set heat 100 set pcolor red ]
+  reset-ticks
+end
+
+to go
+  diffuse heat 0.2
+  ask patches [
+    set pcolor scale-color red heat 0 50
+    set plabel precision heat 1
+  ]
+  tick
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">patches-own [ heat ]</span><span class="mean">Every patch has a heat value.</span></div>
+            <div class="row"><span class="code">to setup</span><span class="mean">Initialize patches and heat.</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Wipe the world.</span></div>
+            <div class="row"><span class="code">ask patches [ set heat 0 set pcolor black ]</span><span class="mean">All patches: cold and black.</span></div>
+            <div class="row"><span class="code">set heat 0</span><span class="mean">This patch’s heat = 0.</span></div>
+            <div class="row"><span class="code">set pcolor black</span><span class="mean">This patch’s color = black.</span></div>
+            <div class="row"><span class="code">ask patch 0 0 [ set heat 100 set pcolor red ]</span><span class="mean">Center patch: hot source.</span></div>
+            <div class="row"><span class="code">set heat 100</span><span class="mean">Center heat = 100.</span></div>
+            <div class="row"><span class="code">set pcolor red</span><span class="mean">Center patch turns red.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Clock = 0.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">One diffusion step.</span></div>
+            <div class="row"><span class="code">diffuse heat 0.2</span><span class="mean">Spread 20% of each patch’s heat to neighbors.</span></div>
+            <div class="row"><span class="code">ask patches [ ... ]</span><span class="mean">Each patch updates display.</span></div>
+            <div class="row"><span class="code">set pcolor scale-color red heat 0 50</span><span class="mean">Map heat 0–50 to a red color scale.</span></div>
+            <div class="row"><span class="code">set plabel precision heat 1</span><span class="mean">Show heat on patch, 1 decimal place.</span></div>
+            <div class="row"><span class="code">precision heat 1</span><span class="mean">Round heat to 1 decimal for label text.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance time one step.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-links">Example 6: links between turtles</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to setup
+  clear-all
+  create-turtles 2 [
+    setxy (who * 4) - 2  0
+    set color blue
+  ]
+  ask turtle 0 [ create-link-to turtle 1 [ set color gray ] ]
+  reset-ticks
+end
+
+to go
+  ask turtle 0 [ fd 0.5 ]
+  ask turtle 1 [ fd -0.5 ]
+  tick
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to setup</span><span class="mean">Create two turtles and link them.</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Start from empty world.</span></div>
+            <div class="row"><span class="code">create-turtles 2 [ ... ]</span><span class="mean">Make 2 turtles; block runs per turtle.</span></div>
+            <div class="row"><span class="code">setxy (who * 4) - 2  0</span><span class="mean">Place turtles side by side using who number.</span></div>
+            <div class="row"><span class="code">who</span><span class="mean">Built-in: this turtle’s ID (0, 1, …).</span></div>
+            <div class="row"><span class="code">set color blue</span><span class="mean">Both turtles turn blue.</span></div>
+            <div class="row"><span class="code">ask turtle 0 [ create-link-to turtle 1 [ ... ] ]</span><span class="mean">Turtle 0 makes a directed link to turtle 1.</span></div>
+            <div class="row"><span class="code">create-link-to turtle 1 [ ... ]</span><span class="mean">New link 0 → 1; block runs on the link.</span></div>
+            <div class="row"><span class="code">set color gray</span><span class="mean">On the link: draw it gray.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Clock = 0.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">Move turtles apart each tick.</span></div>
+            <div class="row"><span class="code">ask turtle 0 [ fd 0.5 ]</span><span class="mean">Turtle 0 moves forward half a patch.</span></div>
+            <div class="row"><span class="code">ask turtle 1 [ fd -0.5 ]</span><span class="mean">Turtle 1 moves backward half a patch.</span></div>
+            <div class="row"><span class="code">fd -0.5</span><span class="mean">Negative forward = walk backward.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance time; link stretches visually.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-reporter">Example 7: to-report and procedure inputs</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to-report distance-to [ agent ]
+  report [ sqrt (xcor ^ 2 + ycor ^ 2) ] of agent
+end
+
+to-report in-range? [ agent dist ]
+  report distance agent &lt; dist
+end
+
+to go
+  ask turtles [
+    if in-range? turtle 0 5 [ set color green ]
+    show distance-to self
+  ]
+  tick
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to-report distance-to [ agent ]</span><span class="mean">Define reporter with one input (an agent).</span></div>
+            <div class="row"><span class="code">report [ sqrt (xcor ^ 2 + ycor ^ 2) ] of agent</span><span class="mean">Return that agent’s distance from origin; exit procedure.</span></div>
+            <div class="row"><span class="code">sqrt (xcor ^ 2 + ycor ^ 2)</span><span class="mean">Pythagoras: distance from (0,0).</span></div>
+            <div class="row"><span class="code">of agent</span><span class="mean">Evaluate the bracketed expression as that agent.</span></div>
+            <div class="row"><span class="code">to-report in-range? [ agent dist ]</span><span class="mean">Reporter with two inputs: agent and distance.</span></div>
+            <div class="row"><span class="code">report distance agent &lt; dist</span><span class="mean">Return true if caller is closer than dist.</span></div>
+            <div class="row"><span class="code">distance agent</span><span class="mean">Built-in: distance from me to that agent.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">Each tick, check range and print distance.</span></div>
+            <div class="row"><span class="code">ask turtles [ ... ]</span><span class="mean">Each turtle runs the block.</span></div>
+            <div class="row"><span class="code">if in-range? turtle 0 5 [ set color green ]</span><span class="mean">If within 5 of turtle 0, turn green.</span></div>
+            <div class="row"><span class="code">in-range? turtle 0 5</span><span class="mean">Call custom reporter: am I near turtle 0?</span></div>
+            <div class="row"><span class="code">show distance-to self</span><span class="mean">Print my distance from origin.</span></div>
+            <div class="row"><span class="code">self</span><span class="mean">Built-in: refers to the agent running the code.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance clock one step.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-lists">Example 8: lists</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to analyze
+  let nums [ 3 1 4 1 5 ]
+  let doubled map [ [x] -> x * 2 ] nums
+  let big filter [ [x] -> x > 3 ] nums
+  let total reduce + nums
+  show sort nums
+  show doubled
+  show big
+  show total
+  foreach nums [ [x] -> print x ]
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to analyze</span><span class="mean">Procedure demonstrating list operations.</span></div>
+            <div class="row"><span class="code">let nums [ 3 1 4 1 5 ]</span><span class="mean">Store a list in local variable nums.</span></div>
+            <div class="row"><span class="code">let doubled map [ [x] -> x * 2 ] nums</span><span class="mean">New list: each item × 2 → [6 2 8 2 10].</span></div>
+            <div class="row"><span class="code">map [ [x] -> x * 2 ] nums</span><span class="mean">Apply anonymous reporter to every item.</span></div>
+            <div class="row"><span class="code">let big filter [ [x] -> x > 3 ] nums</span><span class="mean">New list: only items &gt; 3 → [4 5].</span></div>
+            <div class="row"><span class="code">filter [ [x] -> x > 3 ] nums</span><span class="mean">Keep items where condition is true.</span></div>
+            <div class="row"><span class="code">let total reduce + nums</span><span class="mean">Fold list with + → sum = 14.</span></div>
+            <div class="row"><span class="code">reduce + nums</span><span class="mean">Combine items left-to-right using +.</span></div>
+            <div class="row"><span class="code">show sort nums</span><span class="mean">Print sorted copy → [1 1 3 4 5].</span></div>
+            <div class="row"><span class="code">show doubled</span><span class="mean">Print the doubled list.</span></div>
+            <div class="row"><span class="code">show big</span><span class="mean">Print the filtered list.</span></div>
+            <div class="row"><span class="code">show total</span><span class="mean">Print the sum.</span></div>
+            <div class="row"><span class="code">foreach nums [ [x] -> print x ]</span><span class="mean">Run command on each item; print one per line.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-split">Example 9: split go into smaller procedures</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">globals [ total-deaths ]
+turtles-own [ energy ]
+
+to setup
+  clear-all
+  set total-deaths 0
+  create-turtles 50 [ set energy 100 set color green ]
+  reset-ticks
+end
+
+to go
+  move-turtles
+  update-colors
+  tick
+end
+
+to move-turtles
+  ask turtles [
+    if energy > 0 [
+      fd 1
+      set energy energy - 1
+    ]
+  ]
+end
+
+to update-colors
+  ask turtles [
+    ifelse energy > 50
+      [ set color green ]
+      [ set color red ]
+    if energy <= 0 [
+      set total-deaths total-deaths + 1
+      die
+    ]
+  ]
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">globals [ total-deaths ]</span><span class="mean">One shared counter for the whole model.</span></div>
+            <div class="row"><span class="code">turtles-own [ energy ]</span><span class="mean">Every turtle has its own energy value.</span></div>
+            <div class="row"><span class="code">to setup</span><span class="mean">Initialize world, turtles, and globals.</span></div>
+            <div class="row"><span class="code">clear-all</span><span class="mean">Remove all agents; reset globals to defaults.</span></div>
+            <div class="row"><span class="code">set total-deaths 0</span><span class="mean">Reset death counter to zero.</span></div>
+            <div class="row"><span class="code">create-turtles 50 [ ... ]</span><span class="mean">Make 50 turtles; block runs per turtle.</span></div>
+            <div class="row"><span class="code">set energy 100</span><span class="mean">Each turtle starts with 100 energy.</span></div>
+            <div class="row"><span class="code">set color green</span><span class="mean">Each turtle starts green.</span></div>
+            <div class="row"><span class="code">reset-ticks</span><span class="mean">Clock = 0.</span></div>
+            <div class="row"><span class="code">to go</span><span class="mean">One step: delegate to sub-procedures, then tick.</span></div>
+            <div class="row"><span class="code">move-turtles</span><span class="mean">Call procedure by name (no ask needed).</span></div>
+            <div class="row"><span class="code">update-colors</span><span class="mean">Call second procedure by name.</span></div>
+            <div class="row"><span class="code">tick</span><span class="mean">Advance time one step.</span></div>
+            <div class="row"><span class="code">to move-turtles</span><span class="mean">Separate procedure: handles movement only.</span></div>
+            <div class="row"><span class="code">ask turtles [ ... ]</span><span class="mean">Each turtle runs the block.</span></div>
+            <div class="row"><span class="code">if energy > 0 [ ... ]</span><span class="mean">Only move when energy remains.</span></div>
+            <div class="row"><span class="code">fd 1</span><span class="mean">Walk one patch forward.</span></div>
+            <div class="row"><span class="code">set energy energy - 1</span><span class="mean">Spend 1 energy for moving.</span></div>
+            <div class="row"><span class="code">to update-colors</span><span class="mean">Separate procedure: color + death logic.</span></div>
+            <div class="row"><span class="code">ifelse energy > 50</span><span class="mean">Test: is energy above 50?</span></div>
+            <div class="row"><span class="code">[ set color green ]</span><span class="mean">Then: healthy turtles stay green.</span></div>
+            <div class="row"><span class="code">[ set color red ]</span><span class="mean">Else: low-energy turtles turn red.</span></div>
+            <div class="row"><span class="code">if energy <= 0 [ ... ]</span><span class="mean">When energy is gone, count death and remove turtle.</span></div>
+            <div class="row"><span class="code">set total-deaths total-deaths + 1</span><span class="mean">Increment shared global before turtle dies.</span></div>
+            <div class="row"><span class="code">die</span><span class="mean">Remove this turtle from the world.</span></div>
+          </div>
+          </div>
+          </article>
+
+          <article class="ex-block">
+          <p class="note" id="ex-strings">Example 10: strings and labels</p>
+
+          <div class="ex-content">
+          <pre class="ex-pre">to label-turtles
+  ask turtles [
+    set label word "E:" energy
+    set label-color white
+  ]
+  let msg word "count = " (count turtles)
+  print msg
+end</pre>
+          <div class="translate">
+            <div class="head"><span>Code</span><span>Meaning</span></div>
+            <div class="row"><span class="code">to label-turtles</span><span class="mean">Procedure to show text on turtles and print a message.</span></div>
+            <div class="row"><span class="code">ask turtles [ ... ]</span><span class="mean">Each turtle sets its own label.</span></div>
+            <div class="row"><span class="code">set label word "E:" energy</span><span class="mean">Show text above turtle, e.g. "E:42".</span></div>
+            <div class="row"><span class="code">word "E:" energy</span><span class="mean">Join string and number into one string.</span></div>
+            <div class="row"><span class="code">set label-color white</span><span class="mean">Label text color = white.</span></div>
+            <div class="row"><span class="code">let msg word "count = " (count turtles)</span><span class="mean">Build message string with turtle count.</span></div>
+            <div class="row"><span class="code">word "count = " (count turtles)</span><span class="mean">Mix text and number; parens force order.</span></div>
+            <div class="row"><span class="code">count turtles</span><span class="mean">Reporter: how many turtles exist.</span></div>
+            <div class="row"><span class="code">print msg</span><span class="mean">Output string to Command Center.</span></div>
+          </div>
+          </div>
+          </article></section>
+      </main>
+    </div>
+  </div>
+
+  <button class="mobile-nav-btn" id="nav-btn" type="button">Menu</button>
+
+  <script>
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('theme-btn');
+    const search = document.getElementById('search');
+    const sidebar = document.getElementById('sidebar');
+    const navBtn = document.getElementById('nav-btn');
+
+    function applyTheme(t) {
+      html.dataset.theme = t;
+      themeBtn.textContent = t === 'dark' ? 'Light' : 'Dark';
+      localStorage.setItem('netlogo-guide-theme', t);
+    }
+    const saved = localStorage.getItem('netlogo-guide-theme');
+    if (saved) applyTheme(saved);
+    else if (matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+
+    themeBtn.onclick = () => applyTheme(html.dataset.theme === 'dark' ? 'light' : 'dark');
+    navBtn.onclick = () => sidebar.classList.toggle('open');
+    document.querySelectorAll('.sidebar a').forEach(a => a.onclick = () => sidebar.classList.remove('open'));
+
+    search.oninput = () => {
+      const q = search.value.trim().toLowerCase();
+      document.querySelectorAll('main section').forEach(s => {
+        s.classList.toggle('hidden', q && !(s.dataset.search + ' ' + s.textContent.toLowerCase()).includes(q));
+      });
+    };
+
+    const navLinks = [...document.querySelectorAll('.sidebar nav a')];
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin: '-15% 0 -75% 0' });
+    document.querySelectorAll('main section').forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>
